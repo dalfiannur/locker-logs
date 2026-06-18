@@ -50,17 +50,21 @@ Create a log entry.
 
 ```json
 {
-  "t": "2026-03-06T10:00:00Z",
+  "t": "2026-03-06 10:00:00",
   "no": 5,
-  "id": "ABC123"
+  "id": 28758077,
+  "dev_class": "locker-A"
 }
 ```
 
 | Field | Type | Description |
 |---|---|---|
-| `t` | string (ISO 8601) | Timestamp of the event |
+| `t` | string | Timestamp of the event |
 | `no` | number | Locker number |
-| `id` | string | Card UID |
+| `id` | number \| string | Card UID (decimal UID from the RFID controller; stored as string) |
+| `dev_class` | string (optional) | Reporting device class |
+
+> Matches the payload sent by the RFID controller's `send_eventLog` function.
 
 ### GET `/api/logs`
 
@@ -72,6 +76,7 @@ Get log entries with optional filters and cursor-based pagination.
 |---|---|---|
 | `locker` | number | Filter by locker number |
 | `card_uid` | string | Filter by card UID |
+| `device_class` | string | Filter by device class |
 | `timestamp_from` | string (ISO 8601) | Timestamp range start |
 | `timestamp_to` | string (ISO 8601) | Timestamp range end |
 | `received_from` | string (ISO 8601) | Received range start |
@@ -88,7 +93,8 @@ Get log entries with optional filters and cursor-based pagination.
       "id": 1,
       "timestamp": "2026-03-06T10:00:00.000Z",
       "locker": 5,
-      "cardUid": "ABC123",
+      "cardUid": "28758077",
+      "deviceClass": "locker-A",
       "received": "2026-03-06T10:00:05.000Z"
     }
   ],

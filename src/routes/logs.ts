@@ -6,14 +6,20 @@ import { and, eq, gte, lte, lt } from "drizzle-orm";
 const app = new Hono();
 
 app.post("/", async (c) => {
-  const body = await c.req.json<{ t: string; no: number; id: string }>();
+  const body = await c.req.json<{
+    t: string;
+    no: number;
+    id: number | string;
+    dev_class?: string;
+  }>();
 
   const [log] = await db
     .insert(logs)
     .values({
       timestamp: new Date(body.t),
       locker: body.no,
-      cardUid: body.id,
+      cardUid: String(body.id),
+      deviceClass: body.dev_class ?? null,
     })
     .returning();
 
@@ -24,6 +30,7 @@ app.get("/", async (c) => {
   const {
     locker,
     card_uid,
+    device_class,
     timestamp_from,
     timestamp_to,
     received_from,
@@ -37,6 +44,7 @@ app.get("/", async (c) => {
 
   if (locker) conditions.push(eq(logs.locker, Number(locker)));
   if (card_uid) conditions.push(eq(logs.cardUid, card_uid));
+  if (device_class) conditions.push(eq(logs.deviceClass, device_class));
   if (timestamp_from) conditions.push(gte(logs.timestamp, new Date(timestamp_from)));
   if (timestamp_to) conditions.push(lte(logs.timestamp, new Date(timestamp_to)));
   if (received_from) conditions.push(gte(logs.received, new Date(received_from)));
