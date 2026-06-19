@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { db } from "../db";
 import { logs } from "../db/schema";
-import { and, eq, gte, lte, lt } from "drizzle-orm";
+import { and, eq, gte, lte, lt, desc } from "drizzle-orm";
 
 const app = new Hono();
 
@@ -55,7 +55,7 @@ app.get("/", async (c) => {
     .select()
     .from(logs)
     .where(conditions.length > 0 ? and(...conditions) : undefined)
-    .orderBy(logs.id)
+    .orderBy(desc(logs.id))
     .limit(limit + 1);
 
   const hasMore = result.length > limit;
